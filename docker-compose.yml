@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # сервис базы данных PostgreSQL
+  postgres:
+    image: postgres:latest  # официальный образ PostgreSQL
+    restart: always  # автоматический перезапуск при сбоях
+    environment:
+      POSTGRES_DB: brocker  # название базы данных
+      POSTGRES_USER: postfres  # имя пользователя
+      POSTGRES_PASSWORD: pass  # пароль пользователя
+    ports:
+      - "5432:5432"  # пробрасывает порт для внешнего доступа к PostgreSQL
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # хрпнение данных PostgreSQL вне контейнера
+
+  # сервис для Zookeeper (нужен для работы Kafka)
+  zookeeper:
+    image: wurstmeister/zookeeper:latest  # образ Zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181  # порт для подключения клиентов
+    ports:
+      - "2181:2181"  # пробрасывает порт Zookeeper для внешнего подключения
+
+  # сервис для Kafka (брокер сообщений)
+  kafka:
+    image: wurstmeister/kafka:latest  # образ Kafka
+    environment:
+      # указываем, как Kafka будет доступна внутри и снаружи Docker-сети
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9093,OUTSIDE://host.docker.internal:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181  # подключаем Kafka к Zookeeper
+      KAFKA_CREATE_TOPICS: "credit-requests:1:1"  # автоматически создаем топик
+    ports:
+      - "9093:9093"  # порт для внутренних сервисов
+      - "9092:9092"  # порт для внешнего доступа
+    depends_on:
+      - zookeeper  # Kafka запустится после Zookeeper
+
+  # сервис обработки кредитных заявок (работает с Kafka)
+  credit-service:
+    build:
+      context: ./service-credit  # путь к директории с Dockerfile для сервиса
+      dockerfile: Dockerfile  # используем стандартное имя Dockerfile
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093  # подключение к Kafka внутри Docker-сети
+    depends_on:
+      - kafka  # запуск после Kafka
+
+  # сервис обработки других данных (если требуется)
+  processing-service:
+    build:
+      context: ./service-processing  # путь к директории с Dockerfile
+      dockerfile: Dockerfile  # используем стандартное имя Dockerfile
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093  # подключение к Kafka внутри Docker-сети
+    depends_on:
+      - kafka  # запуск после Kafka
+
+  # сервис для RabbitMQ (очередь сообщений)
+  rabbitmq:
+    image: rabbitmq:management  # образ RabbitMQ с веб-интерфейсом управления
+    environment:
+      RABBITMQ_DEFAULT_USER: admin  # логин по умолчанию
+      RABBITMQ_DEFAULT_PASS: admin  # пароль по умолчанию
+    ports:
+      - "15672:15672"  # веб-интерфейс RabbitMQ
+      - "5672:5672"  # основной порт RabbitMQ
+
+# определение томов для хранения данных PostgreSQL
+volumes:
+  postgres_data:

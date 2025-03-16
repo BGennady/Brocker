@@ -1,7 +1,9 @@
 package ru.netology.kafka;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.stereotype.Component;
 
+@Component
 // класс для отправки результата
 public class CreditApplicationSender {
     // объект для взаимодействия с RabbitMQ
