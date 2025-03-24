@@ -1,9 +1,9 @@
 CREATE TABLE credit_application (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,           -- используем SERIAL для автоинкремента
     loan_amount DECIMAL(15,2) NOT NULL,
     loan_term INT NOT NULL,
     user_income DECIMAL(15,2) NOT NULL,
     current_debt_load DECIMAL(15,2) NOT NULL,
-    credit_rating DECIMAL(15,2) NOT NULL,
-    status VARCHAR(50) DEFAULT 'в обработке'
+    credit_rating INT NOT NULL,      -- INT без (15,2) для целых чисел
+    status VARCHAR(20) DEFAULT 'IN_PROCESS'
 );

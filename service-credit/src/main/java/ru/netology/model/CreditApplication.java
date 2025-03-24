@@ -1,9 +1,6 @@
 package ru.netology.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,21 +16,23 @@ public class CreditApplication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private BigDecimal loanAmount; // сумма кредита
-    private int loanTerm;          // срок кредита
-    private BigDecimal userIncome;       // доход пользователя
-    private BigDecimal currentDebtLoad;  // текущая кредитная нагрузка
-    private BigDecimal creditRating;     // текущий кредитный рейтинг
-    private String status = "в обработке"; //базовый статус
+    private Long id;                    // id
+    private BigDecimal loanAmount;      // сумма кредита
+    private int loanTerm;               // срок кредита
+    private BigDecimal userIncome;      // доход пользователя
+    private BigDecimal currentDebtLoad; // текущая кредитная нагрузка
+    private int creditRating;           // текущий кредитный рейтинг
+    // анотация указывает что в бд сохраняется как строка
+    @Enumerated(EnumType.STRING)
+    private ApplicationStatus status = ApplicationStatus.IN_PROCESS; //базовый статус
 
 
     // конструктор для создания сущности из CreateApplicationRequest
     public CreditApplication(CreateApplicationRequest request) {
-        this.loanAmount = new BigDecimal(request.getLoanAmount());
-        this.loanTerm = Integer.parseInt(request.getLoanTerm());
-        this.userIncome = new BigDecimal(request.getUserIncome());
-        this.currentDebtLoad = new BigDecimal(request.getCurrentDebtLoad());
-        this.creditRating = new BigDecimal(request.getCreditRating());
+        this.loanAmount = request.getLoanAmount();
+        this.loanTerm = request.getLoanTerm();
+        this.userIncome = request.getUserIncome();
+        this.currentDebtLoad = request.getCurrentDebtLoad();
+        this.creditRating = request.getCreditRating();
     }
 }

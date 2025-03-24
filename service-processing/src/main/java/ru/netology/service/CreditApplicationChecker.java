@@ -8,7 +8,7 @@ import ru.netology.model.CreditApplication;
 public class CreditApplicationChecker {
 
     // метод для проверки заявки
-    public boolean check(CreditApplication application) {
+    public boolean check(CreditApplication application) throws Exception {
 
         // расчет допустимого ежемесячного платежа
         double maxMonthlyPayment = application.getUserIncome().doubleValue() * 0.5;
@@ -17,13 +17,16 @@ public class CreditApplicationChecker {
         double monthlyPayment = application.getLoanAmount().doubleValue() / (double) application.getLoanTerm();
 
         // проверка на соответсвие условиям одобрения кредита по ежемесячному платежу
+
+
         if (monthlyPayment + application.getCurrentDebtLoad().doubleValue() > maxMonthlyPayment) {
-            return false;
+            throw new Exception("Сумма ежемесячного платежа превышает максимальный.");
+            // проверка на соответсвие условиям одобрения кредита по кредитному рейтингу
         }
-        // проверка на соответсвие условиям одобрения кредита по кредитному рейтингу
         if (application.getCreditRating() < 100) {
-            return false;
+            throw new Exception("Низкий кредитный рейтинг.");
         }
+        // заявка одобрена
         return true;
     }
 }

@@ -1,22 +1,19 @@
 package ru.netology.kafka;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.netology.model.CreditApplication;
 import ru.netology.service.CreditApplicationChecker;
 
 @Service
+@RequiredArgsConstructor
 // класс для обработки заявок
 public class CreditApplicationProcessor {
-    private final CreditApplicationChecker checker;  // внедряю класс для проверки
-    private final CreditApplicationSender sender; // внедряею класс для отправки результата
+    private final CreditApplicationChecker checker;  // класс для проверки
+    private final CreditApplicationSender sender; // класс для отправки результата
 
-    public CreditApplicationProcessor(CreditApplicationChecker checker, CreditApplicationSender sender) {
-        this.checker = checker;
-        this.sender = sender;
-    }
-
-    // метод принимает строку с данными заявки и обрабатывает её
-    public void process(CreditApplication application) {
+    // метод для обработки заявки и отправки ответа
+    public void process(CreditApplication application) throws Exception {
 
         // метод проверки заявки
         boolean isApproved = checker.check(application);

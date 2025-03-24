@@ -4,36 +4,28 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Entity // класс является сущностью для базы данных
-@Getter  // Lombok создаёт геттеры автоматически
-@Setter  // Lombok создаёт сеттеры автоматически
-@NoArgsConstructor // Lombok создаёт конструктор без аргументов
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 
+// DTO для передачи данных кредитной заявки между сервисами
 public class CreditApplication {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    private Long id; // id заявки
-    private BigDecimal loanAmount; // сумма кредита
-    private int loanTerm;          // срок кредита в месяцах
-    private BigDecimal userIncome; // доход пользователя
+    private Long id;                    // id
+    private BigDecimal loanAmount;      // сумма кредита
+    private int loanTerm;               // срок кредита
+    private BigDecimal userIncome;      // доход пользователя
     private BigDecimal currentDebtLoad; // текущая кредитная нагрузка
-    private double creditRating; // кредитный рейтинг пользователя
-    private String status = "в обработке"; // статус заявки (по умолчанию "в обработке")
-
-    public CreditApplication(BigDecimal loanAmount, int loanTerm, BigDecimal userIncome, BigDecimal currentDebtLoad, double creditRating, String status) {
-        this.loanAmount = loanAmount;
-        this.loanTerm = loanTerm;
-        this.userIncome = userIncome;
-        this.currentDebtLoad = currentDebtLoad;
-        this.creditRating = creditRating;
-        this.status = status;
-    }
+    private int creditRating;           // текущий кредитный рейтинг
 }
