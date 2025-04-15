@@ -38,7 +38,7 @@ public class CreditApplicationListener {
             //логирует обновление
             System.out.printf("Заявка с %d обновлена. Новый статус: %s%n", applicationId, status);
         } catch (Exception e) {
-            // Логирование ошибки
+            // логирование ошибки
             System.err.println("Ошибка при обработке RabbitMQ-сообщения: " + e.getMessage());
         }
     }

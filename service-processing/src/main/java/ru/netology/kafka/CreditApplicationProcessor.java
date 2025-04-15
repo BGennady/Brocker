@@ -2,7 +2,7 @@ package ru.netology.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.netology.model.CreditApplication;
+import ru.netology.model.CreditApplicationEvent;
 import ru.netology.service.CreditApplicationChecker;
 
 @Service
@@ -13,12 +13,15 @@ public class CreditApplicationProcessor {
     private final CreditApplicationSender sender; // класс для отправки результата
 
     // метод для обработки заявки и отправки ответа
-    public void process(CreditApplication application) throws Exception {
+    public void process(CreditApplicationEvent event) throws Exception {
+        try {
+            // метод проверки заявки
+            boolean isApproved = checker.check(event);
 
-        // метод проверки заявки
-        boolean isApproved = checker.check(application);
-
-        // отправка результата через RabbitMQ
-        sender.sendResult(isApproved, application.getId());
+            // отправка результата через RabbitMQ
+            sender.sendResult(isApproved, event.getId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

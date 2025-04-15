@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-// класс для формирования ответа по статусу (или скажи как корректнее навписать)
+// класс для формирования ответа по статусу
 public class ApplicationStatusResponse {
    private  Long id;
    private String status;

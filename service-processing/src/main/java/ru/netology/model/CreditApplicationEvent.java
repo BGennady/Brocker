@@ -1,6 +1,5 @@
 package ru.netology.model;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,7 +16,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 
 // DTO для передачи данных кредитной заявки между сервисами
-public class CreditApplication {
+public class CreditApplicationEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

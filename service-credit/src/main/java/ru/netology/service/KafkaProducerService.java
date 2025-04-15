@@ -12,7 +12,7 @@ import ru.netology.model.CreditApplicationEvent;
 public class KafkaProducerService {
 
     // аннотация для внедрения зависимостей
-    private KafkaTemplate<String, CreditApplicationEvent> kafkaTemplate;
+    private final KafkaTemplate<String, CreditApplicationEvent> kafkaTemplate;
     // название топика (канала передачи данных)
     private static final String TOPIC = "credit-applications";
 

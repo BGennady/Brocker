@@ -21,14 +21,6 @@ public class CreditService {
         CreditApplication application = new CreditApplication(request);
         // сохраняем заявку в базу
         repository.save(application);
-        return application.getId();
-    }
-
-    // метод для получения статуса заявки по ID
-    public ApplicationStatusResponse getStatus(Long id) {
-        // получение заявку из базы данных по ID
-        CreditApplication application = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Заявка не найдена"));
 
         // отправка сообщения в Kafka
         CreditApplicationEvent event = new CreditApplicationEvent(
@@ -40,6 +32,15 @@ public class CreditService {
                 application.getCreditRating()     // текущий кредитный рейтинг
         );
         producerService.sendApplication(event);
+
+        return application.getId();
+    }
+
+    // метод для получения статуса заявки по ID
+    public ApplicationStatusResponse getStatus(Long id) {
+        // получение заявки из базы данных по ID
+        CreditApplication application = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Заявка не найдена"));
 
         // возврат объекта с ID и статусом
         return new ApplicationStatusResponse(application.getId(), application.getStatus().name());

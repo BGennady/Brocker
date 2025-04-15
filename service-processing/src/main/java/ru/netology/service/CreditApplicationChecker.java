@@ -1,30 +1,30 @@
 package ru.netology.service;
 
 import org.springframework.stereotype.Component;
-import ru.netology.model.CreditApplication;
+import ru.netology.model.CreditApplicationEvent;
 
 @Component
 // класс для проверки заявки
 public class CreditApplicationChecker {
 
     // метод для проверки заявки
-    public boolean check(CreditApplication application) throws Exception {
+    public boolean check(CreditApplicationEvent event) throws Exception {
 
         // расчет допустимого ежемесячного платежа
-        double maxMonthlyPayment = application.getUserIncome().doubleValue() * 0.5;
+        double maxMonthlyPayment = event.getUserIncome().doubleValue() * 0.5;
 
         // расчет ежемесячного фактического ежемесячного платежа
-        double monthlyPayment = application.getLoanAmount().doubleValue() / (double) application.getLoanTerm();
+        double monthlyPayment = event.getLoanAmount().doubleValue() / (double) event.getLoanTerm();
 
         // проверка на соответсвие условиям одобрения кредита по ежемесячному платежу
-
-
-        if (monthlyPayment + application.getCurrentDebtLoad().doubleValue() > maxMonthlyPayment) {
-            throw new Exception("Сумма ежемесячного платежа превышает максимальный.");
-            // проверка на соответсвие условиям одобрения кредита по кредитному рейтингу
+        if (monthlyPayment + event.getCurrentDebtLoad().doubleValue() > maxMonthlyPayment) {
+            System.out.println("Сумма ежемесячного платежа превышает максимальный.");
+            return false;
         }
-        if (application.getCreditRating() < 100) {
-            throw new Exception("Низкий кредитный рейтинг.");
+        // проверка на соответсвие условиям одобрения кредита по кредитному рейтингу
+        if (event.getCreditRating() < 55) {
+            System.out.println("Низкий кредитный рейтинг.");
+            return false;
         }
         // заявка одобрена
         return true;
