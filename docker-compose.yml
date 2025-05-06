@@ -25,17 +25,14 @@ services:
   # сервис для Kafka (брокер сообщений)
   kafka:
     image: wurstmeister/kafka:latest  # используем официальный образ Kafka
-
     environment:
       KAFKA_BROKER_ID: 1  # задаем уникальный идентификатор брокера Kafka
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181  # указываем, как Kafka будет подключаться к Zookeeper
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092  # адрес для Kafka внутри Docker-сети
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092  # указываем порт для внешних подключений
       KAFKA_CREATE_TOPICS: "credit-requests:1:1"  # создаем топик "credit-requests" с 1 партицией и 1 репликой
-
     ports:
       - "9092:9092"  # пробрасываем порт для внешнего доступа к Kafka
-
     depends_on:
       - zookeeper  # Kafka будет запущен только после Zookeeper
 
@@ -45,9 +42,10 @@ services:
       context: ./service-credit  # путь к директории с Dockerfile для сервиса
       dockerfile: Dockerfile  # используем стандартное имя Dockerfile
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9093  # подключение к Kafka внутри Docker-сети
-    depends_on:
-      - kafka  # запуск после Kafka
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092  # подключение к Kafka внутри Docker-сети
+    depends_on: # запуск после
+      - kafka  # Kafka
+      - processing-service # и processing-service
 
   # сервис обработки других данных (если требуется)
   processing-service:
@@ -55,16 +53,17 @@ services:
       context: ./service-processing  # путь к директории с Dockerfile
       dockerfile: Dockerfile  # используем стандартное имя Dockerfile
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9093  # подключение к Kafka внутри Docker-сети
-    depends_on:
-      - kafka  # запуск после Kafka
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092  # подключение к Kafka внутри Docker-сети
+    depends_on: # контейнер processing-servic запустить:
+      - kafka  # после Kafka
+      - postgres # после postgres
 
   # сервис для RabbitMQ (очередь сообщений)
   rabbitmq:
     image: rabbitmq:management  # образ RabbitMQ с веб-интерфейсом управления
     environment:
-      RABBITMQ_DEFAULT_USER: admin  # логин по умолчанию
-      RABBITMQ_DEFAULT_PASS: admin  # пароль по умолчанию
+      RABBITMQ_DEFAULT_USER: guest  # логин по умолчанию
+      RABBITMQ_DEFAULT_PASS: guest  # пароль по умолчанию
     ports:
       - "15672:15672"  # веб-интерфейс RabbitMQ
       - "5672:5672"  # основной порт RabbitMQ
