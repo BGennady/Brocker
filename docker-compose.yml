@@ -46,6 +46,8 @@ services:
     depends_on: # запуск после
       - kafka  # Kafka
       - processing-service # и processing-service
+    ports:
+      - "8081:8080"
 
   # сервис обработки других данных (если требуется)
   processing-service:
